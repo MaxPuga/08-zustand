@@ -68,12 +68,12 @@ export default function NotesClient({ tag }: { tag?: string }) {
       {isError && <p>Error loading notes</p>}
 
       {notes.length > 0 && <NoteList notes={notes} />}
-
+{/* 
       {isOpen && (
         <Modal onClose={() => setIsOpen(false)}>
           <NoteForm onClose={() => setIsOpen(false)} />
         </Modal>
-      )}
+      )} */}
     </div>
   );
 }
