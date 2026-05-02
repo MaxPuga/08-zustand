@@ -1,43 +1,51 @@
-import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClient,
-} from '@tanstack/react-query';
-
+import type { Metadata } from 'next';
 import { fetchNoteById } from '@/lib/api';
-import NoteDetailsClient from './NoteDetails.client';
-// import type { Metadata } from 'next';
+import NoteDetails from './NoteDetails.client';
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-
-  return {
-    title: `Note ${id}`,
-    description: `Details of note ${id}`,
+interface PageProps {
+  params: {
+    id: string;
   };
 }
 
-interface Props {
-  params: Promise<{ id: string }>;
+export default function Page({ params }: PageProps) {
+  return <NoteDetails id={params.id} />;
 }
 
-export default async function NotePage({ params }: Props) {
-  const { id } = await params;
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  try {
+    const note = await fetchNoteById(params.id);
 
-  const queryClient = new QueryClient();
-
-  await queryClient.prefetchQuery({
-    queryKey: ['note', id],
-    queryFn: () => fetchNoteById(id),
-  });
-
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <NoteDetailsClient />
-    </HydrationBoundary>
-  );
+    return {
+      title: note.title,
+      description: note.content.slice(0, 100),
+      openGraph: {
+        title: note.title,
+        description: note.content.slice(0, 100),
+        url: `/notes/${params.id}`,
+        images: [
+          {
+            url: 'https://ac.goit.global/fullstack/react/notehub-og-meta.jpg',
+          },
+        ],
+      },
+    };
+  } catch (error) {
+    return {
+      title: 'Note not found',
+      description: 'This note does not exist',
+      openGraph: {
+        title: 'Note not found',
+        description: 'This note does not exist',
+        url: `/notes/${params.id}`,
+        images: [
+          {
+            url: 'https://ac.goit.global/fullstack/react/notehub-og-meta.jpg',
+          },
+        ],
+      },
+    };
+  }
 }
