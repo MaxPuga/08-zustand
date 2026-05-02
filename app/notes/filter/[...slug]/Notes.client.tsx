@@ -3,14 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchNotes } from '@/lib/api';
-
 import Link from 'next/link';
 
 import SearchBox from '@/components/SearchBox/SearchBox';
 import Pagination from '@/components/Pagination/Pagination';
 import NoteList from '@/components/NoteList/NoteList';
-import Modal from '@/components/Modal/Modal';
-import NoteForm from '@/components/NoteForm/NoteForm';
 
 import css from './NotesPage.module.css';
 
@@ -18,7 +15,6 @@ export default function NotesClient({ tag }: { tag?: string }) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -68,12 +64,6 @@ export default function NotesClient({ tag }: { tag?: string }) {
       {isError && <p>Error loading notes</p>}
 
       {notes.length > 0 && <NoteList notes={notes} />}
-{/* 
-      {isOpen && (
-        <Modal onClose={() => setIsOpen(false)}>
-          <NoteForm onClose={() => setIsOpen(false)} />
-        </Modal>
-      )} */}
     </div>
   );
 }
